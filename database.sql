@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 19, 2024 at 12:46 AM
+-- Generation Time: Oct 19, 2024 at 04:36 AM
 -- Server version: 10.4.27-MariaDB
 -- PHP Version: 8.2.0
 
@@ -28,8 +28,7 @@ USE `usuarios`;
 --
 -- Table structure for table `usuario`
 --
--- Creation: Oct 17, 2024 at 10:29 PM
--- Last update: Oct 18, 2024 at 10:11 PM
+-- Creation: Oct 19, 2024 at 02:00 AM
 --
 
 CREATE TABLE `usuario` (
@@ -45,13 +44,8 @@ CREATE TABLE `usuario` (
 --
 
 INSERT INTO `usuario` (`id`, `nombre`, `email`, `telefono`, `direccion`) VALUES
-(1, 'Camilo', 'correo@correo.com', '30034343', 'avenida 33'),
-(2, '', '', '', ''),
-(3, '', '', '', ''),
-(4, 'prueba', 'prueba@correo.com', '79000', 'avenida'),
-(5, '', '', '', ''),
-(6, 'Camilo EDITADO', 'correo@correo.com', '30034343', 'avenida 33'),
-(7, 'tfjgur', 'gg@gmail.com', '687787', 'kjgklml');
+(6, 'Prueba EDITADO', 'prueba@correo.com', '8892', 'avenida'),
+(7, 'davi EDITADO', 'david@gmail.com', '2343544', 'avenida 33');
 
 --
 -- Indexes for dumped tables

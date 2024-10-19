@@ -4,8 +4,9 @@ include 'conexion.php';
 
 // Permitir CORS
 header("Access-Control-Allow-Origin: *");
-header("Access-Control-Allow-Methods: POST, GET, OPTIONS");
+header("Access-Control-Allow-Methods: POST, GET, PUT, DELETE, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With");
+
 
 /* ----- POST */
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -96,6 +97,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
 
     // Verifica que se hayan recibido los datos correctamente
     if ($data && isset($data['id'], $data['nombre'], $data['email'], $data['telefono'], $data['direccion'])) {
+        var_dump($data); // Para ver qué datos se reciben
         // Asignar los valores del JSON a las variables
         $id = $data['id'];
         $nombre = $data['nombre'];
@@ -105,15 +107,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
 
         try {
             /* Preparamos consulta */
-            $query = "UPDATE usuario SET nombre = :nombre, email = :email, telefono = :telefono, direccion = :direccion WHERE telefono = :telefono";
+            $query = "UPDATE usuario SET nombre = :nombre, email = :email, telefono = :telefono, direccion = :direccion WHERE id = :id";
             $statement = $pdo->prepare($query);
 
             // Asignar los valores a los parámetros de la consulta
+            $statement->bindParam(':id', $id);
             $statement->bindParam(':nombre', $nombre);
             $statement->bindParam(':email', $email);
             $statement->bindParam(':telefono', $telefono);
             $statement->bindParam(':direccion', $direccion);
-            $statement->bindParam(':id', $id);
 
             // Ejecutar la consulta
             $statement->execute();
@@ -127,39 +129,39 @@ if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
         echo 'Error: No se recibieron todos los datos.';
     }
 }
+
 /* ----- DELETE */
 if ($_SERVER['REQUEST_METHOD'] === 'DELETE') {
     // Decodificar el cuerpo JSON de la solicitud
     $data = json_decode(file_get_contents('php://input'), true);
 
-    // Verifica que se haya recibido el ID del usuario a eliminar
+    // Verificar que se recibió el ID
     if ($data && isset($data['id'])) {
-        // Asignar el ID del JSON a la variable
         $id = $data['id'];
 
         try {
-            // Preparar la consulta para eliminar el usuario
+            // Preparar la consulta de eliminación
             $query = "DELETE FROM usuario WHERE id = :id";
             $statement = $pdo->prepare($query);
 
-            // Asignar el valor a los parámetros de la consulta
-            $statement->bindParam(':id', $id);
+            // Asignar el valor del ID al parámetro de la consulta
+            $statement->bindParam(':id', $id, PDO::PARAM_INT);
 
             // Ejecutar la consulta
             $statement->execute();
 
-            // Verifica si se eliminó algún registro
+            // Verificar si se eliminó algún registro
             if ($statement->rowCount() > 0) {
-                echo 'Usuario eliminado correctamente';
+                echo json_encode(['message' => 'Usuario eliminado correctamente']);
             } else {
-                echo 'No se encontró ningún usuario con ese ID';
+                echo json_encode(['message' => 'No se encontró el usuario']);
             }
         } catch (PDOException $e) {
-            echo 'Error al eliminar el usuario: ' . $e->getMessage();
+            echo json_encode(['error' => 'Error al eliminar el usuario: ' . $e->getMessage()]);
         }
     } else {
-        // Mensaje de error si no se recibe el ID
-        echo 'Error: No se recibió el ID del usuario.';
+        // Mensaje de error si faltan datos
+        echo json_encode(['error' => 'Error: No se recibió el ID del usuario']);
     }
 }
 
