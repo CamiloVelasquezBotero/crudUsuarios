@@ -1,4 +1,4 @@
-import { createContext, useState, useEffect, Children } from 'react';
+import { createContext, useState, useEffect } from 'react';
 import axios from 'axios'
 
 const UsuariosContext = createContext();
@@ -15,7 +15,7 @@ const UsuariosProvider = ({children}) => {
                     'Content-Type': 'application/json' // Especificamos que estás enviando JSON
                 }
             });
-            console.log(respuesta);
+            obtenerUsuarios()
         } catch (error) {
             console.log(error)
         }
@@ -51,10 +51,7 @@ const UsuariosProvider = ({children}) => {
     }
 
     const editarUsuario = async datos => {
-        await obtenerUsuarios();
-
-        const encontrado = await usuarios.find(usuario => usuario.telefono === datos.telefono);
-
+        const encontrado = usuarios.find(usuario => usuario.id === datos.id);
         if(encontrado) {
             try {
                 const respuesta = await axios.put('http://localhost/conexion/consultas.php', datos, {
@@ -62,6 +59,7 @@ const UsuariosProvider = ({children}) => {
                         'Content-Type': 'application/json' // Especificamos que estás enviando JSON
                     }
                 });
+                obtenerUsuarios();
                 console.log(respuesta);
             } catch (error) {
                 console.log(error)
@@ -76,17 +74,25 @@ const UsuariosProvider = ({children}) => {
 
     }
 
-    const eliminarUsuario = async (usuarioTelefono) => {
+    const eliminarUsuario = async (telefono) => {
+        const encontrado = await usuarios.filter(usuario => usuario.telefono == telefono)
+        const id = encontrado[0].id;
         try {
-            const respuesta = await axios.delete(`http://localhost/conexion/consultas.php?id=${usuarioTelefono}`, {
+            // Hacemos la solicitud DELETE a la API
+            const respuesta = await axios.delete('http://localhost/conexion/consultas.php', {
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
                 },
-                data: { id: usuarioTelefono } // Enviamos el ID en el cuerpo de la solicitud
+                data: { id } // Enviamos el ID en el cuerpo de la solicitud
             });
-            console.log(respuesta.data);
+    
+            console.log(respuesta.data); // Verificar la respuesta del servidor
             // Actualizamos la lista de usuarios después de la eliminación
-            obtenerUsuarios();
+            obtenerUsuarios(); // Vuelve a cargar la lista de usuarios
+            return {
+                "validacion": true,
+                "mensaje":"Eliminado"
+            }
         } catch (error) {
             console.log(error);
         }

@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react'
 import useUsuarios from '../hooks/useUsuarios'
 import RegistroUsuarios from "./RegistroUsuarios"
-import axios from 'axios'
 
 const Inicio = () => {
     const [nombre, setNombre] = useState("")
@@ -9,7 +8,7 @@ const Inicio = () => {
     const [telefono, setTelefono] = useState("")
     const [direccion, setDireccion] = useState("")
 
-    const [mensaje, setMensaje] = useState("")
+    /* const [mensaje, setMensaje] = useState("") */
     const [estadoBoton, setEstadoBoton] = useState("Agregar")
 
     const [ telefonoUsuario, setTelefonoUsuario] = useState("");
@@ -34,11 +33,14 @@ const Inicio = () => {
             crearUsuario(datos);
             
         } else if(estadoBoton == "Editar") {
+            const usuarioEncontrado = await usuarios.filter(usuario => usuario.telefono == telefono);
+            
             const datos = {
-                nombre,
-                email,
-                telefono,
-                direccion
+                "id": usuarioEncontrado[0].id,
+                "nombre": nombre,
+                "email": email,
+                "telefono": telefono,
+                "direccion": direccion
             }
             editarUsuario(datos);
         }
@@ -62,12 +64,9 @@ const Inicio = () => {
         setDireccion("")
     }
     const handleEditar = () => {
-        if(isBuscarOpen) {
-            openBuscar()
-        }
         setEstadoBoton("Editar")
     }
-    const handleEliminar = () => {
+    const handleEliminar = async () => {
         eliminarUsuario(telefono)
     }
     const handleSubmitBuscar = async(e) => {
@@ -121,7 +120,7 @@ const Inicio = () => {
                             <label htmlFor="nombre" className={isTableOpen ? '-ml-3 bg-blue-400 p-1 rounded-xl mr-5' : 'bg-blue-400 p-1 rounded-xl mr-5'}>Direccion</label>
                             <input className={isTableOpen ? 'border border-black' : 'p-1 border border-black '} name='direccion' id='nombre' type="text" value={direccion} onChange={e => setDireccion(e.target.value)}/>
                         </div>
-                        <button type='submit'className='bg-green-500 rounded-lg p-2' onClick={handleSubmit}>{estadoBoton}</button>
+                        <button type='submit'className='bg-green-500 rounded-lg p-3 text-xl' onClick={handleSubmit}>{estadoBoton}</button>
                     </form>
                 </div>
 
